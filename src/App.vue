@@ -12,7 +12,10 @@ import NavBar from "./components/NavBar.vue";
 export default {
   components: { NavBar },
   mounted() {
-    console.log("Il CD non ha funzionato!!! 🔥 🚀");
+    console.log(
+      process.env.VUE_APP_FIREBASE_API_KEY,
+      process.env.VUE_APP_STORAGE_BUCKET
+    );
   },
 };
 </script>
