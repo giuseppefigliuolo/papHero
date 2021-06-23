@@ -11,6 +11,9 @@
 import NavBar from "./components/NavBar.vue";
 export default {
   components: { NavBar },
+  mounted() {
+    console.log("Il CD ha funzionato!!! 🔥 🚀");
+  },
 };
 </script>
 
