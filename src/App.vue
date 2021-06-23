@@ -1,32 +1,64 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app id="inspire">
+    <nav-bar />
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
+<script>
+import NavBar from "./components/NavBar.vue";
+export default {
+  components: { NavBar },
+};
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.accent-clr {
+  color: $accent-clr !important;
 }
 
-#nav {
-  padding: 30px;
+.full-vh {
+  height: 100vh;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+.fw {
+  &--light {
+    font-weight: $light;
   }
+  &--normal {
+    font-weight: $normal;
+  }
+  &--semi-bold {
+    font-weight: $semi-bold;
+  }
+  &--bold {
+    font-weight: $bold;
+  }
+}
+
+.fz {
+  &--1 {
+    font-size: 0.8rem;
+  }
+  &--2 {
+    font-size: 1.2rem;
+  }
+  &--3 {
+    font-size: 1.35rem;
+  }
+  &--4 {
+    font-size: 2.75rem;
+  }
+}
+
+a {
+  color: $accent-clr;
+  text-decoration: none;
+}
+
+.c-pointer {
+  cursor: pointer;
 }
 </style>
