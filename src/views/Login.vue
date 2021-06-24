@@ -4,7 +4,10 @@
       <logo />
     </v-container>
     <v-row justify="center">
-      <v-col cols="9" class="d-flex flex-column align-center">
+      <v-col cols="9" class="red--text py-0 text-center error-container">
+        <p v-if="error">{{ error }}</p>
+      </v-col>
+      <v-col cols="9" class="d-flex flex-column align-center mt-n5">
         <h2 class="form fz--3">Hai già un account?</h2>
         <!-- FORM -->
         <v-form>
@@ -13,15 +16,14 @@
               <v-text-field
                 label="e-mail"
                 v-model="email"
+                :rules="[rules.required, rules.email]"
                 class="mt-4"
                 color="grey darken-3"
                 outlined
-                dense
               ></v-text-field>
               <v-text-field
                 v-model="password"
                 :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="rules.password"
                 :type="show ? 'text' : 'password'"
                 name="input-10-2"
                 label="Password"
@@ -30,18 +32,9 @@
                 @click:append="show = !show"
                 @keypress.enter="loginHandler"
                 outlined
-                dense
               ></v-text-field>
             </v-col>
-            <v-col>
-              <p class="mt-n5 primary--text">
-                Altrimenti
-                <router-link to="/sign-in" class="accent-clr fw--bold"
-                  >Registrati</router-link
-                >
-              </p>
-            </v-col>
-            <v-col cols="12">
+            <v-col cols="12" class="mt-n4">
               <v-btn
                 block
                 color="accent"
@@ -55,6 +48,14 @@
                 ><v-icon left dark> mdi-google </v-icon>Continua con
                 Google</v-btn
               >
+            </v-col>
+            <v-col>
+              <p class=" primary--text">
+                Altrimenti
+                <router-link to="/sign-in" class="accent-clr fw--bold"
+                  >Registrati</router-link
+                >
+              </p>
             </v-col>
           </v-row>
         </v-form>
@@ -74,7 +75,11 @@ export default {
     return {
       show: false,
       rules: {
-        password: this.error,
+        required: (value) => !!value || "E-mail field is required",
+        email: (value) => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return pattern.test(value) || "Invalid e-mail.";
+        },
       },
     };
   },
@@ -85,5 +90,9 @@ export default {
 .form {
   color: $gray;
   font-weight: $normal;
+}
+
+.error-container {
+  height: 60px;
 }
 </style>
