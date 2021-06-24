@@ -11,7 +11,8 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                label="Username"
+                label="e-mail"
+                v-model="email"
                 class="mt-4"
                 color="grey darken-3"
                 outlined
@@ -20,12 +21,14 @@
               <v-text-field
                 v-model="password"
                 :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                :rules="rules.password"
                 :type="show ? 'text' : 'password'"
                 name="input-10-2"
                 label="Password"
                 class="input-group--focused"
                 color="grey darken-3"
                 @click:append="show = !show"
+                @keypress.enter="loginHandler"
                 outlined
                 dense
               ></v-text-field>
@@ -38,10 +41,14 @@
                 >
               </p>
             </v-col>
-          </v-row>
-          <v-row>
             <v-col cols="12">
-              <v-btn block color="accent" elevation="2" height="43px"
+              <v-btn
+                block
+                color="accent"
+                elevation="2"
+                height="43px"
+                @click="loginHandler"
+                :loading="isPending"
                 >Accedi</v-btn
               >
               <v-btn block dark elevation="2" height="43px" class="mt-4"
@@ -58,12 +65,17 @@
 
 <script>
 import Logo from "../components/atoms/Logo";
+import { useLogin } from "@/mixins/useLogin";
+
 export default {
   components: { Logo },
+  mixins: [useLogin],
   data() {
     return {
       show: false,
-      password: "",
+      rules: {
+        password: this.error,
+      },
     };
   },
 };

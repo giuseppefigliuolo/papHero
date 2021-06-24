@@ -35,18 +35,6 @@
                 outlined
                 dense
               ></v-text-field>
-              <v-text-field
-                v-model="password"
-                :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                :type="show ? 'text' : 'password'"
-                name="input-10-2"
-                label="Repeat Password"
-                color="grey darken-3"
-                @click:append="show = !show"
-                outlined
-                readonly
-                dense
-              ></v-text-field>
             </v-col>
             <v-col>
               <p class="mt-n5 primary--text">
