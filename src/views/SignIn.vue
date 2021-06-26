@@ -79,8 +79,8 @@
 </template>
 
 <script>
-import Logo from "../components/atoms/Logo";
-import { useSignup } from "@/mixins/useSignup";
+import Logo from '../components/atoms/Logo'
+import { useSignup } from '@/mixins/useSignup'
 
 export default {
   components: { Logo },
@@ -89,16 +89,16 @@ export default {
     return {
       show: false,
       rules: {
-        required: (value) => !!value || "E-mail field is required",
-        min: (v) => v.length >= 6 || "Must be at least 6 characters",
+        required: (value) => !!value || 'E-mail field is required',
+        min: (v) => v.length >= 6 || 'Must be at least 6 characters',
         email: (value) => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return pattern.test(value) || "Invalid e-mail.";
-        },
-      },
-    };
-  },
-};
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
+        }
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
