@@ -24,7 +24,6 @@ export const logoutMixin = {
 
       if (!this.error) {
         console.log(' user logged out')
-        this.drawer = !drawer
       }
     }
   }

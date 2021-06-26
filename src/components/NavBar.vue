@@ -27,7 +27,7 @@
           </v-list-item-content>
         </v-list-item>
         <!-- logout menu item -->
-        <v-list-item link>
+        <v-list-item link @click="logoutHandler">
           <v-list-item-icon>
             <v-icon>{{ logoutItem.icon }}</v-icon>
           </v-list-item-icon>
