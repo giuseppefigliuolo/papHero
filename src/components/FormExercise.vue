@@ -5,6 +5,7 @@
         label="Exercise Name"
         color="grey darken-3"
         outlined
+        :rules="[rules.required]"
         v-model="newExName"
         dense
         autofocus
@@ -24,11 +25,13 @@
     </v-col>
     <v-file-input
       class="mt-n5"
-      :rules="rules"
+      :rules="[rules.image]"
       accept="image/png, image/jpeg, image/webp"
       placeholder="Pick an exercise preview"
       prepend-icon="mdi-image"
       label="Image"
+      v-model="coverImg"
+      @change="handleChange"
     ></v-file-input>
     <v-col class="d-flex justify-end mb-n3 mt-2">
       <v-btn outlined plain class="mr-4" @click="cancelBtnClicked"
@@ -44,33 +47,39 @@
 <script>
 export default {
   props: {
-    formForUpdate: { type: Boolean, default: false },
+    formForUpdate: { type: Boolean, default: false }
   },
   data() {
     return {
-      newExName: "",
-      newExDescription: "",
-      rules: [
-        (value) =>
+      newExName: '',
+      newExDescription: '',
+      coverImg: null,
+      coverImgError: null,
+      rules: {
+        image: (value) =>
           !value ||
           value.size < 2000000 ||
-          "Image size should be less than 2 MB!",
-      ],
-    };
+          'Image size should be less than 2 MB!',
+        required: (value) => !!value || 'Give a name to this exercise!'
+      }
+    }
   },
   methods: {
     savingUpdates() {
       if (this.formForUpdate) {
-        console.log("Exercise updated");
+        console.log('Exercise updated')
       } else {
-        console.log("Exercise created");
+        console.log('Exercise created')
       }
     },
     cancelBtnClicked() {
-      this.$events.emit("closeFormEx");
+      this.$events.emit('closeFormEx')
     },
-  },
-};
+    handleChange(evt) {
+      console.log(this.coverImg)
+    }
+  }
+}
 </script>
 
 <style></style>

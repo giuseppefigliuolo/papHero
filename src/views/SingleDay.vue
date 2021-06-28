@@ -129,8 +129,8 @@
               plain
               class="mr-4"
               @click="
-                showExInfo = false;
-                modifyExercise = false;
+                showExInfo = false
+                modifyExercise = false
               "
               >Cancel</v-btn
             >
@@ -168,7 +168,11 @@
     </Modal>
     <modal v-if="addingNewExercise"
       ><v-card-text class="py-2 card-text"
-        ><v-btn @click="showExInfo = false" x-large icon class="close-btn"
+        ><v-btn
+          @click="addingNewExercise = false"
+          x-large
+          icon
+          class="close-btn"
           ><v-icon>mdi-close</v-icon></v-btn
         ></v-card-text
       ><form-exercise :formForUpdate="!addingNewExercise && modifyExercise"
@@ -190,15 +194,15 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import Modal from "../components/Modal.vue";
-import FormExercise from "../components/FormExercise.vue";
+import draggable from 'vuedraggable'
+import Modal from '../components/Modal.vue'
+import FormExercise from '../components/FormExercise.vue'
 
 export default {
   components: {
     draggable,
     Modal,
-    FormExercise,
+    FormExercise
   },
   data() {
     return {
@@ -206,27 +210,27 @@ export default {
       showExInfo: false,
       modifyExercise: false,
       deleteCheck: false,
-      addingNewExercise: false,
-    };
+      addingNewExercise: false
+    }
   },
   computed: {
     currentRecord() {
-      const currRecord = `<b>5</b>(50) - <b>5</b>(55) - <b>4</b>(60) - <b>5</b>(60) - <b>4</b>(70)`;
-      return currRecord;
-    },
+      const currRecord = `<b>5</b>(50) - <b>5</b>(55) - <b>4</b>(60) - <b>5</b>(60) - <b>4</b>(70)`
+      return currRecord
+    }
   },
   mounted() {
-    this.$events.on("closeFormEx", () => {
-      this.addingNewExercise = false;
-      this.modifyExercise = false;
-    });
+    this.$events.on('closeFormEx', () => {
+      this.addingNewExercise = false
+      this.modifyExercise = false
+    })
   },
   methods: {
     deleteExercise() {
-      console.log("deleteExercise");
-    },
-  },
-};
+      console.log('deleteExercise')
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
