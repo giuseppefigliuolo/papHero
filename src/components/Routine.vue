@@ -1,12 +1,15 @@
 <template>
   <v-container class="mt-2">
     <div class="fz--2">
-      <h2 class="pl-5 primary--text fw--semi-bold">Routine di Tony</h2>
+      <h2 class="pl-5 primary--text fw--semi-bold" v-if="$root.user">
+        Routine di {{ $root.user.displayName }}
+      </h2>
     </div>
     <v-row class="my-4">
       <draggable
         class="draggable-section"
-        v-model="exercises"
+        v-model="programs"
+        handle=".drag-ex-icon"
         @start="drag = true"
         @end="drag = false"
         animation="200"
@@ -17,15 +20,15 @@
           md="6"
           lg="4"
           class="mr-n2 pr-1 d-flex align-center"
-          v-for="(ex, i) in exercises"
-          :key="ex.name + i"
-          @click="goToExercise(ex.name)"
+          v-for="(program, i) in programs"
+          :key="program.day + i"
+          @click="goToExercise(program.id)"
         >
-          <v-icon large left>mdi-drag</v-icon>
-          <v-avatar :color="ex.color" dark size="46"
-            ><span class="white--text">{{ ex.day }}</span></v-avatar
+          <v-icon large left class="drag-ex-icon">mdi-drag</v-icon>
+          <v-avatar :color="program.color" dark size="46"
+            ><span class="white--text">{{ program.day }}</span></v-avatar
           >
-          <span class="ml-5 fz--2">{{ ex.name }}</span>
+          <span class="ml-5 fz--2">{{ program.name }}</span>
           <v-menu>
             <template v-slot:activator="{ on, attrs }">
               <v-icon
@@ -39,12 +42,12 @@
               </v-icon>
             </template>
             <v-list>
-              <v-list-item v-for="(item, index) in items" :key="index">
-                <v-list-item-title
-                  ><router-link :to="`/${item.title}`">{{
-                    item.title
-                  }}</router-link></v-list-item-title
-                >
+              <v-list-item
+                v-for="(item, index) in items"
+                :key="index"
+                @click="handleDotsMenu(item.title.toLowerCase(), program.id)"
+              >
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -107,7 +110,14 @@
               <v-btn outlined plain class="mr-4" @click="showModal = false"
                 >Cancel</v-btn
               >
-              <v-btn elevation="2" color="accent" class="mr-4">Done</v-btn>
+              <v-btn
+                elevation="2"
+                color="accent"
+                class="mr-4"
+                :loading="isPending"
+                @click="handleSubmitNewProgram"
+                >Done</v-btn
+              >
             </v-col>
           </v-row>
         </v-form>
@@ -117,61 +127,97 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import Modal from "../components/Modal.vue";
+import draggable from 'vuedraggable'
+import Modal from '../components/Modal.vue'
+import { projectFirestore } from '../firebase/config'
+import { timestamp } from '../firebase/config'
 
 export default {
   components: {
     draggable,
-    Modal,
+    Modal
   },
   data() {
     return {
-      exercises: [
-        {
-          name: "Petto e tricipiti",
-          color: "primary",
-          day: "lun",
-        },
-        {
-          name: "Gambe",
-          color: "orange",
-          day: "mer",
-        },
-        {
-          name: "Dorso e bicipiti",
-          color: "green",
-          day: "ven",
-        },
-      ],
       dragging: false,
-      items: [{ title: "Edit" }, { title: "Delete" }],
+      items: [{ title: 'Edit' }, { title: 'Delete' }],
       showModal: false,
-      chosenClr: "",
-      newName: "",
-      newDay: "",
-    };
+      chosenClr: '',
+      isPending: false,
+      newName: '',
+      programs: [],
+      newDay: '',
+      error: null
+    }
+  },
+  mounted() {
+    this.docRef = projectFirestore
+      .collection('accounts')
+      .doc(this.$root.user.uid)
+      .collection('programs')
+      .orderBy('createdAt')
+
+    this.docRef.onSnapshot((collection) => {
+      let results = []
+      collection.docs.forEach((program) => {
+        program.data().createdAt &&
+          results.push({ ...program.data(), id: program.id })
+      })
+      this.programs = results
+      this.error = null
+    })
   },
   watch: {
-    exercises(value) {
-      console.log(value);
+    programs(value) {
+      console.log(value)
     },
     chosenClr(value) {
-      console.log(value);
+      console.log(value)
     },
     newDay(value) {
       if (value.length >= 3) {
-        this.newDay = value;
+        this.newDay = value
       }
-    },
+    }
   },
   methods: {
-    goToExercise(ex) {
-      const cleanEx = ex.replace(/\s+/g, "-").toLowerCase();
-      this.$router.push(`/${cleanEx}`);
+    goToExercise(id) {
+      this.$router.push(`/${id}`)
     },
-  },
-};
+    handleSubmitNewProgram() {
+      this.isPending = true
+      this.docRef
+        .doc()
+        .set({
+          name: this.newName,
+          day: this.newDay,
+          color: this.chosenClr,
+          createdAt: timestamp()
+        })
+        .then(() => {
+          this.isPending = false
+          this.showModal = false
+          this.newName = ''
+          this.newDay = ''
+          this.newChosenClr = ''
+        })
+        .catch((err) => console.log(err))
+    },
+    handleDotsMenu(type, id) {
+      if (type === 'delete') {
+        this.docRef
+          .collection('programs')
+          .doc(id)
+          .delete()
+          .then(() => {
+            console.log('Document deleted!')
+          })
+          .catch((err) => console.log(err))
+        // console.log(id)
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -12,9 +12,12 @@ Vue.use(VueEvents)
 // siccome se refreshiamo la pagina durante il check autenticazione il risultato sarà nullo qui ogni volta che lo user check cambia valore gli facciamo fare questo
 let app
 
-projectAuth.onAuthStateChanged(() => {
+projectAuth.onAuthStateChanged((user) => {
   if (!app) {
     app = new Vue({
+      data: {
+        user
+      },
       router,
       vuetify,
       render: (h) => h(App)

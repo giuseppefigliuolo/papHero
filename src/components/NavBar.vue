@@ -4,15 +4,15 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="text-h6">
-            {{ user ? user.displayName : 'Welcome' }}
+            {{ $root.user ? $root.user.displayName : 'Welcome' }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            {{ user ? user.email : 'Login or signup to start' }}
+            {{ $root.user ? $root.user.email : 'Login or signup to start' }}
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
       <v-divider></v-divider>
-      <v-list dense nav v-if="user">
+      <v-list dense nav v-if="$root.user">
         <v-list-item
           v-for="item in items"
           :key="item.title"
@@ -67,12 +67,11 @@
 
 <script>
 import { logoutMixin } from '@/mixins/logout'
-import { checkUser } from '@/mixins/checkUser'
 import Loader from './Loader.vue'
 
 export default {
   components: { Loader },
-  mixins: [logoutMixin, checkUser],
+  mixins: [logoutMixin],
   data: () => {
     return {
       drawer: null,
