@@ -22,7 +22,7 @@
           class="mr-n2 pr-1 d-flex align-center"
           v-for="(program, i) in programs"
           :key="program.day + i"
-          @click="goToExercise(program.id)"
+          @click="goToExercise(program)"
         >
           <v-icon large left class="drag-ex-icon">mdi-drag</v-icon>
           <v-avatar :color="program.color" dark size="46"
@@ -129,7 +129,6 @@
 <script>
 import draggable from 'vuedraggable'
 import Modal from '../components/Modal.vue'
-import { projectFirestore } from '../firebase/config'
 import { timestamp } from '../firebase/config'
 
 export default {
@@ -151,11 +150,7 @@ export default {
     }
   },
   mounted() {
-    this.docRef = projectFirestore
-      .collection('accounts')
-      .doc(this.$root.user.uid)
-      .collection('programs')
-      .orderBy('createdAt')
+    this.docRef = this.$root.userDoc.collection('programs').orderBy('createdAt')
 
     this.docRef.onSnapshot((collection) => {
       let results = []
@@ -181,8 +176,9 @@ export default {
     }
   },
   methods: {
-    goToExercise(id) {
-      this.$router.push(`/${id}`)
+    goToExercise(program) {
+      // this.$events.emit('goToProgram', program)
+      this.$router.push(`/${program.id}`)
     },
     handleSubmitNewProgram() {
       this.isPending = true
@@ -213,7 +209,6 @@ export default {
             console.log('Document deleted!')
           })
           .catch((err) => console.log(err))
-        // console.log(id)
       }
     }
   }

@@ -37,7 +37,12 @@
       <v-btn outlined plain class="mr-4" @click="cancelBtnClicked"
         >Cancel</v-btn
       >
-      <v-btn elevation="2" color="accent" class="mr-n2" @click="savingUpdates"
+      <v-btn
+        elevation="2"
+        color="accent"
+        class="mr-n2"
+        @click="savingUpdates"
+        :loading="isPending"
         >Done</v-btn
       >
     </v-col>
@@ -55,6 +60,7 @@ export default {
       newExDescription: '',
       coverImg: null,
       coverImgError: null,
+      isPending: false,
       rules: {
         image: (value) =>
           !value ||
@@ -66,10 +72,24 @@ export default {
   },
   methods: {
     savingUpdates() {
+      this.isPending = false
       if (this.formForUpdate) {
         console.log('Exercise updated')
       } else {
-        console.log('Exercise created')
+        // for adding new exercise
+        this.$root.userDoc
+          .collection('exercises')
+          .doc()
+          .set({
+            name: this.newExName,
+            description: this.newExDescription
+          })
+          .then(() => {
+            this.isPending = false
+            console.log('exercise added!')
+            this.cancelBtnClicked()
+          })
+          .catch((err) => console.log(err))
       }
     },
     cancelBtnClicked() {

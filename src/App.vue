@@ -8,11 +8,17 @@
 </template>
 
 <script>
-import NavBar from "./components/NavBar.vue";
+import NavBar from './components/NavBar.vue'
+import { projectFirestore } from './firebase/config'
+
 export default {
   components: { NavBar },
-  mounted() {},
-};
+  created() {
+    this.$root.userDoc = projectFirestore
+      .collection('accounts')
+      .doc(this.$root.user.uid)
+  }
+}
 </script>
 
 <style lang="scss">

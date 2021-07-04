@@ -16,7 +16,8 @@ projectAuth.onAuthStateChanged((user) => {
   if (!app) {
     app = new Vue({
       data: {
-        user
+        user,
+        userDoc: null
       },
       router,
       vuetify,

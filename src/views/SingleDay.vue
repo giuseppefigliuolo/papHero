@@ -2,13 +2,17 @@
   <div>
     <v-container class="mt-2">
       <div class="fz--3">
-        <h2 class="pl-5 accent--text fw--semi-bold">Wednesday</h2>
-        <h6 class="pl-5 primary--text fw--light fz--2">Petto e tricipiti</h6>
+        <h2 class="pl-5 accent--text fw--semi-bold text-capitalize">
+          {{ program.day }}
+        </h2>
+        <h6 class="pl-5 primary--text fw--light fz--2 text-capitalize">
+          {{ program.name }}
+        </h6>
       </div>
       <v-row class="my-4">
         <v-col>
           <v-expansion-panels>
-            <v-expansion-panel v-for="(item, i) in 5" :key="i">
+            <!-- <v-expansion-panel v-for="(item, i) in 5" :key="i">
               <v-expansion-panel-header>
                 <div class="accordion-header">
                   <v-icon> mdi-drag </v-icon><span>Item</span
@@ -51,7 +55,7 @@
                   </v-col>
                 </v-card>
               </v-expansion-panel-content>
-            </v-expansion-panel>
+            </v-expansion-panel> -->
           </v-expansion-panels>
         </v-col>
       </v-row>
@@ -210,7 +214,8 @@ export default {
       showExInfo: false,
       modifyExercise: false,
       deleteCheck: false,
-      addingNewExercise: false
+      addingNewExercise: false,
+      program: {}
     }
   },
   computed: {
@@ -224,6 +229,12 @@ export default {
       this.addingNewExercise = false
       this.modifyExercise = false
     })
+    this.$root.userDoc
+      .collection('programs')
+      .doc(this.$route.params.day)
+      .onSnapshot((doc) => {
+        this.program = doc.data()
+      })
   },
   methods: {
     deleteExercise() {
