@@ -49,8 +49,8 @@ const routes = [
     beforeEnter: requireLogout
   },
   {
-    path: '/:day',
-    name: 'single-day',
+    path: '/program/:day',
+    name: 'SingleProgram',
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/SingleDay.vue'),
     beforeEnter: requireAuth

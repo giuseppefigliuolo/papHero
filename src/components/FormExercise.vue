@@ -84,10 +84,19 @@ export default {
             name: this.newExName,
             description: this.newExDescription
           })
-          .then(() => {
-            this.isPending = false
-            console.log('exercise added!')
-            this.cancelBtnClicked()
+          .then((exerciseRef) => {
+            this.$root.userDoc
+              .collection('programs')
+              .doc(this.$route.params.day)
+              .set({
+                exercises: [exerciseRef.id]
+              })
+              .then(() => {
+                this.isPending = false
+                console.log('exercise added!')
+                this.cancelBtnClicked()
+              })
+              .catch((err) => console.log(err))
           })
           .catch((err) => console.log(err))
       }

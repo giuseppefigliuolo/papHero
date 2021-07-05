@@ -150,9 +150,8 @@ export default {
     }
   },
   mounted() {
-    this.docRef = this.$root.userDoc.collection('programs').orderBy('createdAt')
-
-    this.docRef.onSnapshot((collection) => {
+    this.docRef = this.$root.userDoc.collection('programs')
+    this.docRef.orderBy('createdAt').onSnapshot((collection) => {
       let results = []
       collection.docs.forEach((program) => {
         program.data().createdAt &&
@@ -178,7 +177,7 @@ export default {
   methods: {
     goToExercise(program) {
       // this.$events.emit('goToProgram', program)
-      this.$router.push(`/${program.id}`)
+      this.$router.push(`/program/${program.id}`)
     },
     handleSubmitNewProgram() {
       this.isPending = true
