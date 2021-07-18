@@ -1,6 +1,15 @@
 <template>
   <div>
     <v-col cols="10">
+      <v-select
+        v-model="existingExerciseSelected"
+        label="Add existing exercise"
+        clearable
+        class="mb-n4"
+        :items="allExercises"
+      ></v-select>
+    </v-col>
+    <v-col cols="10">
       <v-text-field
         label="Exercise Name"
         color="grey darken-3"
@@ -9,6 +18,7 @@
         v-model="newExName"
         dense
         autofocus
+        :disabled="!!existingExerciseSelected"
       ></v-text-field>
     </v-col>
     <v-col cols="12" class="mt-n5">
@@ -21,6 +31,7 @@
         full-width
         outlined
         dense
+        :disabled="!!existingExerciseSelected"
       ></v-textarea>
     </v-col>
     <v-file-input
@@ -32,6 +43,7 @@
       label="Image"
       v-model="coverImg"
       @change="handleChange"
+      :disabled="!!existingExerciseSelected"
     ></v-file-input>
     <v-col class="d-flex justify-end mb-n3 mt-2">
       <v-btn outlined plain class="mr-4" @click="cancelBtnClicked"
@@ -61,6 +73,8 @@ export default {
       coverImg: null,
       coverImgError: null,
       isPending: false,
+      existingExerciseSelected: null,
+      allExercises: [],
       rules: {
         image: (value) =>
           !value ||
@@ -70,22 +84,59 @@ export default {
       }
     }
   },
+  computed: {
+    allExercisesName() {
+      return this.allExercises.filter((ex) => ex.name)
+    }
+  },
+  created() {
+    this.fetchAllExercise()
+  },
   methods: {
-    savingUpdates() {
+    async savingUpdates() {
       this.isPending = false
       if (this.formForUpdate) {
         console.log('Exercise updated')
       } else {
-        // for adding new exercise
-        this.$root.userDoc
-          .collection('exercises')
-          .doc()
-          .set({
-            name: this.newExName,
-            description: this.newExDescription
-          })
-          .then((exerciseRef) => {
-            this.$root.userDoc
+        const programId = this.$route.params.day
+
+        if (this.existingExerciseSelected) {
+          try {
+            const existingInOldRef = await this.$root.userDoc
+              .collection('exercises')
+              .doc(this.existingExerciseSelected)
+              .get()
+              .then((val) => val.data().existingIn)
+
+            await this.$root.userDoc
+              .collection('exercises')
+              .doc(this.existingExerciseSelected)
+              .set(
+                {
+                  existingIn: [...existingInOldRef, programId]
+                },
+                { merge: true }
+              )
+          } catch (err) {
+            console.log(err)
+          }
+        } else {
+          /* ADDING NEW EX */
+          // salviamo l'esercizio dentro la collezione di esercizi
+          this.$root.userDoc
+            .collection('exercises')
+            .doc()
+            .set(
+              {
+                name: this.newExName,
+                description: this.newExDescription,
+                existingIn: [programId]
+              },
+              { merge: true }
+            )
+            .then((exerciseRef) => {
+              console.log('exercise added')
+              /* this.$root.userDoc
               .collection('programs')
               .doc(this.$route.params.day)
               .set({
@@ -96,9 +147,16 @@ export default {
                 console.log('exercise added!')
                 this.cancelBtnClicked()
               })
-              .catch((err) => console.log(err))
-          })
-          .catch((err) => console.log(err))
+              .catch((err) => console.log(err)) */
+            })
+            .catch((err) => console.log(err))
+          // salviamo dentro il programma un array con tutti gli esercizi
+          // this.$root.userDoc.collection('programs').doc(programId).set({
+
+          // })
+        }
+
+        // for adding new exercise
       }
     },
     cancelBtnClicked() {
@@ -106,6 +164,24 @@ export default {
     },
     handleChange(evt) {
       console.log(this.coverImg)
+    },
+    fetchAllExercise() {
+      this.$root.userDoc
+        .collection('exercises')
+        .get()
+        .then((exs) =>
+          exs.forEach((ex) => {
+            const extractedData = ex.data()
+            debugger
+            const exData = {
+              text: extractedData.name,
+              value: ex.id,
+              disabled: false
+            }
+            this.allExercises.push(exData)
+          })
+        )
+        .catch((err) => console.log(err))
     }
   }
 }
