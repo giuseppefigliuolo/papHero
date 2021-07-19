@@ -166,6 +166,7 @@
         </div>
         <form-exercise
           :formForUpdate="modifyExercise && !addingNewExercise"
+          :exercises="program.exercises"
           v-else
         />
       </v-card-text>
@@ -179,7 +180,9 @@
           class="close-btn"
           ><v-icon>mdi-close</v-icon></v-btn
         ></v-card-text
-      ><form-exercise :formForUpdate="!addingNewExercise && modifyExercise"
+      ><form-exercise
+        :formForUpdate="!addingNewExercise && modifyExercise"
+        :exercises="program.exercises"
     /></modal>
     <v-btn
       fixed
@@ -215,7 +218,8 @@ export default {
       modifyExercise: false,
       deleteCheck: false,
       addingNewExercise: false,
-      program: {}
+      program: {},
+      exercises: []
     }
   },
   computed: {
@@ -224,7 +228,7 @@ export default {
       return currRecord
     }
   },
-  mounted() {
+  async created() {
     this.$events.on('closeFormEx', () => {
       this.addingNewExercise = false
       this.modifyExercise = false

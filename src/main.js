@@ -9,7 +9,6 @@ Vue.config.productionTip = false
 
 Vue.use(VueEvents)
 
-// siccome se refreshiamo la pagina durante il check autenticazione il risultato sarà nullo qui ogni volta che lo user check cambia valore gli facciamo fare questo
 let app
 
 projectAuth.onAuthStateChanged((user) => {
@@ -17,7 +16,8 @@ projectAuth.onAuthStateChanged((user) => {
     app = new Vue({
       data: {
         user,
-        userDoc: null
+        userDoc: null,
+        allExercises: []
       },
       router,
       vuetify,

@@ -17,6 +17,19 @@ export default {
     this.$root.userDoc = projectFirestore
       .collection('accounts')
       .doc(this.$root.user.uid)
+      .then(() => {
+        this.$root.userDoc.collection('exercises').onSnapshot((ref) => {
+          this.$root.allExercises = ref.docs.map((doc) => {
+            const extractedData = doc.data()
+            return {
+              text: extractedData.name,
+              value: doc.id,
+              disabled: false,
+              existingIn: extractedData.existingIn
+            }
+          })
+        })
+      })
   }
 }
 </script>
