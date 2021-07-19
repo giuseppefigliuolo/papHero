@@ -12,10 +12,10 @@
       <v-row class="my-4">
         <v-col>
           <v-expansion-panels>
-            <!-- <v-expansion-panel v-for="(item, i) in 5" :key="i">
+            <v-expansion-panel v-for="(exercise, i) in exercises" :key="i">
               <v-expansion-panel-header>
                 <div class="accordion-header">
-                  <v-icon> mdi-drag </v-icon><span>Item</span
+                  <v-icon> mdi-drag </v-icon><span>{{ exercise.text }}</span
                   ><v-icon @click="showExInfo = !showExInfo">
                     mdi-information-outline </v-icon
                   ><v-icon @click="showHistory = !showHistory">
@@ -55,7 +55,7 @@
                   </v-col>
                 </v-card>
               </v-expansion-panel-content>
-            </v-expansion-panel> -->
+            </v-expansion-panel>
           </v-expansion-panels>
         </v-col>
       </v-row>
@@ -218,14 +218,20 @@ export default {
       modifyExercise: false,
       deleteCheck: false,
       addingNewExercise: false,
-      program: {},
-      exercises: []
+      program: {}
     }
   },
   computed: {
     currentRecord() {
       const currRecord = `<b>5</b>(50) - <b>5</b>(55) - <b>4</b>(60) - <b>5</b>(60) - <b>4</b>(70)`
       return currRecord
+    },
+    exercises() {
+      if (!this.program.exercises) return
+      return this.program.exercises.map((ex) => {
+        const matchingEx = this.$root.allExercises.find((el) => el.value === ex)
+        return matchingEx
+      })
     }
   },
   async created() {

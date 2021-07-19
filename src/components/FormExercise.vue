@@ -85,9 +85,6 @@ export default {
       }
     }
   },
-  created() {
-    this.fetchAllExercise()
-  },
   methods: {
     async savingUpdates() {
       this.isPending = true
