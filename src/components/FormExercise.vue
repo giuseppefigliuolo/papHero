@@ -62,6 +62,8 @@
 </template>
 
 <script>
+import { timestamp } from '../firebase/config'
+
 export default {
   props: {
     formForUpdate: { type: Boolean, default: false },
@@ -106,7 +108,7 @@ export default {
               .doc(this.existingExerciseSelected)
               .set(
                 {
-                  existingIn: [...existingInOldRef, programId]
+                  existingIn: [...existingInOldRef, this.programId]
                 },
                 { merge: true }
               )
@@ -116,14 +118,14 @@ export default {
           }
         } else {
           /* ADDING NEW EX */
-          this.isPending = true
           try {
             await this.$root.userDoc
               .collection('exercises')
               .add({
                 name: this.newExName,
                 description: this.newExDescription,
-                existingIn: [this.programId]
+                existingIn: [this.programId],
+                createdAt: timestamp()
               })
               .then((ref) => {
                 this.newExerciseId = ref.id
@@ -135,6 +137,7 @@ export default {
           this.isPending = false
         }
       }
+
       await this.$root.userDoc
         .collection('programs')
         .doc(this.programId)

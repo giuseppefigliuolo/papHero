@@ -9,27 +9,45 @@
 
 <script>
 import NavBar from './components/NavBar.vue'
-import { projectFirestore } from './firebase/config'
+import { projectFirestore, projectAuth } from './firebase/config'
 
 export default {
+  name: 'App',
   components: { NavBar },
-  created() {
+  async created() {
     console.log('created')
-    this.$root.userDoc = projectFirestore
-      .collection('accounts')
-      .doc(this.$root.user.uid)
+    try {
+      if (!this.$root.user) {
+        projectAuth.onAuthStateChanged((_user) => {
+          console.log('user state change. Current user is: ', _user)
+          this.$root.user = _user
 
-    this.$root.userDoc.collection('exercises').onSnapshot((ref) => {
-      this.$root.allExercises = ref.docs.map((doc) => {
-        const extractedData = doc.data()
-        return {
-          text: extractedData.name,
-          value: doc.id,
-          disabled: false,
-          existingIn: extractedData.existingIn
-        }
+          this.$root.userDoc = projectFirestore
+            .collection('accounts')
+            .doc(this.$root.user?.uid)
+        })
+      }
+
+      if (!this.$root.userDoc) {
+        this.$root.userDoc = projectFirestore
+          .collection('accounts')
+          .doc(this.$root.user?.uid)
+      }
+
+      this.$root.userDoc?.collection('exercises').onSnapshot((ref) => {
+        this.$root.allExercises = ref.docs.map((doc) => {
+          const extractedData = doc.data()
+          return {
+            text: extractedData.name,
+            value: doc.id,
+            disabled: false,
+            existingIn: extractedData.existingIn
+          }
+        })
       })
-    })
+    } catch (err) {
+      console.log(err)
+    }
   }
 }
 </script>

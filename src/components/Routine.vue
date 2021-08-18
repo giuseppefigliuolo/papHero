@@ -149,17 +149,20 @@ export default {
       error: null
     }
   },
-  mounted() {
+  created() {
     this.docRef = this.$root.userDoc.collection('programs')
-    this.docRef.orderBy('createdAt').onSnapshot((collection) => {
-      let results = []
-      collection.docs.forEach((program) => {
-        program.data().createdAt &&
-          results.push({ ...program.data(), id: program.id })
-      })
-      this.programs = results
-      this.error = null
-    })
+    this.docRef.orderBy('createdAt').onSnapshot(
+      (collection) => {
+        let results = []
+        collection.docs.forEach((program) => {
+          program.data().createdAt &&
+            results.push({ ...program.data(), id: program.id })
+        })
+        this.programs = results
+        this.error = null
+      },
+      (err) => console.log(err)
+    )
   },
   watch: {
     programs(value) {
@@ -201,7 +204,6 @@ export default {
     handleDotsMenu(type, id) {
       if (type === 'delete') {
         this.docRef
-          .collection('programs')
           .doc(id)
           .delete()
           .then(() => {
