@@ -5,14 +5,30 @@ import Login from '../views/Login.vue'
 import SignIn from '@/views/SignIn.vue'
 
 // Route guard
-import { projectAuth } from '../firebase/config'
+import { projectAuth, projectFirestore } from '../firebase/config'
 
-const requireAuth = (to, from, next) => {
+const requireAuth = async (to, from, next) => {
   let user = projectAuth.currentUser
+
   if (!user) {
     next({ name: 'Login' })
   } else {
     // se lo user esiste lo facciamo procedere
+    router.app.$root.userDoc = await projectFirestore
+      .collection('accounts')
+      .doc(user.uid)
+
+    router.app.$root.userDoc.collection('exercises').onSnapshot((ref) => {
+      router.app.$root.allExercises = ref.docs.map((doc) => {
+        const extractedData = doc.data()
+        return {
+          text: extractedData.name,
+          value: doc.id,
+          disabled: false,
+          existingIn: extractedData.existingIn
+        }
+      })
+    })
     next()
   }
 }

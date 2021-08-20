@@ -67,7 +67,12 @@ import { timestamp } from '../firebase/config'
 export default {
   props: {
     formForUpdate: { type: Boolean, default: false },
-    exercises: { type: Array, default: [] }
+    exercises: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
   },
   data() {
     return {

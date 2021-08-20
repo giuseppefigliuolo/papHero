@@ -10,7 +10,16 @@
         </h6>
       </div>
       <v-row class="my-4">
-        <v-col> </v-col>
+        <v-col>
+          <v-expansion-panels v-if="exercises">
+            <ExerciseAccordion
+              v-for="(exercise, index) in exercises"
+              :key="exercise.value + index"
+              :currentRecord="currentRecord"
+              :title="exercise.text"
+            />
+          </v-expansion-panels>
+        </v-col>
       </v-row>
     </v-container>
     <!-- HISTORY MODAL -->
@@ -156,6 +165,7 @@
 <script>
 import draggable from 'vuedraggable'
 import Modal from '../components/Modal.vue'
+import ExerciseAccordion from '../components/ExerciseAccordion.vue'
 import FormExercise from '../components/FormExercise.vue'
 
 export default {
@@ -163,6 +173,7 @@ export default {
   components: {
     draggable,
     Modal,
+    ExerciseAccordion,
     FormExercise
   },
   data() {
@@ -213,20 +224,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.accordion-header {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 4fr 1fr 1fr;
-
-  span {
-    align-self: center;
-  }
-}
-
-.v-expansion-panel-header {
-  padding-left: 0rem !important;
-}
-
 .close-btn {
   position: absolute;
   right: 5px;

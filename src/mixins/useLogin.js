@@ -21,6 +21,7 @@ export const useLogin = {
           this.email,
           this.password
         )
+
         this.isPending = false
         // resettiamo l'errore
         this.error = null

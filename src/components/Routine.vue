@@ -132,6 +132,7 @@ import Modal from '../components/Modal.vue'
 import { timestamp } from '../firebase/config'
 
 export default {
+  name: 'Routine',
   components: {
     draggable,
     Modal
