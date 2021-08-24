@@ -46,39 +46,20 @@
     </Modal>
     <Modal v-if="showExInfo && !showHistory">
       <v-card-text class="py-6 card-text">
-        <v-btn @click="showExInfo = false" x-large icon class="close-btn"
-          ><v-icon>mdi-close</v-icon></v-btn
-        >
-        <h2 class="fz--3 accent-clr mb-3">Panca Piana</h2>
-        <p class="primary--text fw--normal fz--1 my-4">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium
-          pariatur corporis facilis ut doloribus hic quam. Suscipit atque
-          reiciendis nemo?
-        </p>
-        <v-img
-          max-height="140"
-          lazy-src="https://media.istockphoto.com/vectors/man-working-out-with-barbell-lying-on-a-bench-bench-press-colorful-vector-id1028234906?k=6&m=1028234906&s=612x612&w=0&h=9bQsWLMYx2HudQ5ar3ZJmt4s4VqA_Kd1Gg6yp-rG-0g="
-          src="https://media.istockphoto.com/vectors/man-working-out-with-barbell-lying-on-a-bench-bench-press-colorful-vector-id1028234906?k=6&m=1028234906&s=612x612&w=0&h=9bQsWLMYx2HudQ5ar3ZJmt4s4VqA_Kd1Gg6yp-rG-0g="
-        ></v-img>
-        <v-col class="d-flex justify-end mb-n3 mt-5">
-          <v-btn outlined plain class="mr-4" @click="showExInfo = false"
-            >Cancel</v-btn
-          >
-          <v-btn elevation="2" color="accent" class="mr-n2">Modify</v-btn>
-        </v-col>
-      </v-card-text>
-    </Modal>
-    <Modal v-if="showExInfo && !showHistory">
-      <v-card-text class="py-6 card-text">
-        <v-btn @click="showExInfo = false" x-large icon class="close-btn"
+        <v-btn
+          @click="
+            showExInfo = false
+            deleteCheck = false
+          "
+          x-large
+          icon
+          class="close-btn"
           ><v-icon>mdi-close</v-icon></v-btn
         >
         <div v-if="!modifyExercise">
-          <h2 class="fz--3 accent-clr mb-3">Panca Piana</h2>
+          <h2 class="fz--3 accent-clr mb-3">{{ exerciseInfo.text }}</h2>
           <p class="primary--text fw--normal fz--1 my-4">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium
-            pariatur corporis facilis ut doloribus hic quam. Suscipit atque
-            reiciendis nemo?
+            {{ exerciseInfo.description }}
           </p>
           <v-img
             max-height="140"
@@ -92,7 +73,7 @@
               outlined
               dark
               icon
-              @click="deleteCheck = true"
+              @click="deleteCheck = !deleteCheck"
               ><v-icon>mdi-delete</v-icon></v-btn
             >
             <v-btn
@@ -102,6 +83,7 @@
               @click="
                 showExInfo = false
                 modifyExercise = false
+                deleteCheck = false
               "
               >Cancel</v-btn
             >
@@ -116,7 +98,7 @@
           <v-col v-if="deleteCheck" class="pa-0 mt-4 mb-n5">
             <v-alert dark color="deep-orange">
               <v-row align="center">
-                <v-col class="grow">
+                <v-col class="grow text-center">
                   Are you sure you want to delete?
                 </v-col>
                 <v-col cols="12" class="d-flex justify-center mt-n5 mb-n2">
@@ -134,11 +116,12 @@
         <form-exercise
           :formForUpdate="modifyExercise && !addingNewExercise"
           :exercises="program.exercises"
+          :exerciseId="exerciseInfo.value"
           v-else
         />
       </v-card-text>
     </Modal>
-    <modal v-if="addingNewExercise"
+    <Modal v-if="addingNewExercise"
       ><v-card-text class="py-2 card-text"
         ><v-btn
           @click="addingNewExercise = false"
@@ -150,7 +133,7 @@
       ><form-exercise
         :formForUpdate="!addingNewExercise && modifyExercise"
         :exercises="program.exercises"
-    /></modal>
+    /></Modal>
     <v-btn
       fixed
       bottom
@@ -190,7 +173,8 @@ export default {
       deleteCheck: false,
       addingNewExercise: false,
       program: {},
-      isPending: false
+      isPending: false,
+      exerciseInfo: {}
     }
   },
   computed: {
@@ -214,6 +198,7 @@ export default {
     this.$events.on('closeFormEx', () => {
       this.addingNewExercise = false
       this.modifyExercise = false
+      this.showExInfo = false
     })
 
     this.$events.on('history-btn-clicked', (exerciseId) => {
@@ -234,6 +219,12 @@ export default {
           }
         })
     })
+
+    this.$events.on('info-btn-clicked', (exercise) => {
+      this.showExInfo = true
+      this.exerciseInfo = exercise
+    })
+
     this.$root.userDoc
       .collection('programs')
       .doc(this.$route.params.day)
@@ -243,7 +234,19 @@ export default {
   },
   methods: {
     deleteExercise() {
-      console.log('deleteExercise')
+      this.$root.userDoc
+        .collection('exercises')
+        .doc(this.exerciseInfo.value)
+        .delete()
+        .then(() => {
+          console.log('Document successfully deleted!')
+
+          this.deleteCheck = false
+          this.showExInfo = false
+        })
+        .catch((error) => {
+          console.error('Error removing document: ', error)
+        })
     }
   }
 }

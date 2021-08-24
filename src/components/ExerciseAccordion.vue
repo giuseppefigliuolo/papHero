@@ -3,9 +3,7 @@
     <v-expansion-panel-header>
       <div class="accordion-header">
         <v-icon> mdi-drag </v-icon><span>{{ exercise.text }}</span>
-        <v-icon @click="showExInfo = !showExInfo"
-          >mdi-information-outline</v-icon
-        >
+        <v-icon @click="infoBtnHandler">mdi-information-outline</v-icon>
         <v-icon @click="historyBtnHandler"> mdi-history</v-icon>
       </div>
     </v-expansion-panel-header>
@@ -133,6 +131,9 @@ export default {
     },
     historyBtnHandler() {
       this.$events.emit('history-btn-clicked', this.exercise.value)
+    },
+    infoBtnHandler() {
+      this.$events.emit('info-btn-clicked', this.exercise)
     }
   }
 }

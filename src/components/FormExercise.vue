@@ -2,6 +2,7 @@
   <div>
     <v-col cols="10">
       <v-select
+        v-if="!exerciseId"
         v-model="existingExerciseSelected"
         label="Add existing exercise"
         clearable
@@ -55,6 +56,7 @@
         class="mr-n2"
         @click="savingUpdates"
         :loading="isPending"
+        :disabled="newExName.length < 3"
         >Done</v-btn
       >
     </v-col>
@@ -65,6 +67,7 @@
 import { timestamp } from '../firebase/config'
 
 export default {
+  name: 'FormExercise',
   props: {
     formForUpdate: { type: Boolean, default: false },
     exercises: {
@@ -72,7 +75,8 @@ export default {
       default() {
         return []
       }
-    }
+    },
+    exerciseId: { type: String }
   },
   data() {
     return {
@@ -96,7 +100,18 @@ export default {
     async savingUpdates() {
       this.isPending = true
       if (this.formForUpdate) {
-        console.log('Exercise updated')
+        this.$root.userDoc
+          .collection('exercises')
+          .doc(this.exerciseId)
+          .set(
+            {
+              name: this.newExName,
+              description: this.newExDescription
+            },
+            { merge: true }
+          )
+
+        this.isPending = false
       } else {
         this.programId = this.$route.params.day
 
@@ -117,7 +132,6 @@ export default {
                 },
                 { merge: true }
               )
-            this.isPending = false
           } catch (err) {
             console.log(err)
           }
@@ -141,21 +155,21 @@ export default {
 
           this.isPending = false
         }
-      }
 
-      await this.$root.userDoc
-        .collection('programs')
-        .doc(this.programId)
-        .set(
-          {
-            exercises: [
-              ...this.exercises,
-              this.existingExerciseSelected || this.newExerciseId
-            ]
-          },
-          { merge: true }
-        )
-        .then(() => console.log('added in ex array'))
+        await this.$root.userDoc
+          .collection('programs')
+          .doc(this.programId)
+          .set(
+            {
+              exercises: [
+                ...this.exercises,
+                this.existingExerciseSelected || this.newExerciseId
+              ]
+            },
+            { merge: true }
+          )
+          .then(() => console.log('added in ex array'))
+      }
       this.cancelBtnClicked()
     },
     cancelBtnClicked() {
