@@ -15,8 +15,7 @@
             <ExerciseAccordion
               v-for="(exercise, index) in exercises"
               :key="exercise.value + index"
-              :currentRecord="currentRecord"
-              :title="exercise.text"
+              :exercise="exercise"
             />
           </v-expansion-panels>
         </v-col>
@@ -28,15 +27,21 @@
         <v-btn @click="showHistory = false" x-large icon class="close-btn"
           ><v-icon>mdi-close</v-icon></v-btn
         >
-        <h2 class="fz--3 accent-clr mb-4">Cronologia</h2>
+        <h2 class="fz--3 accent-clr mb-4">History</h2>
         <h6 class="primary--text fw--light fz--2 mb-5">Petto e tricipiti</h6>
-        <div><p v-html="currentRecord"></p></div>
-        <div><p v-html="currentRecord"></p></div>
-        <div><p v-html="currentRecord"></p></div>
-        <div><p v-html="currentRecord"></p></div>
-        <div><p v-html="currentRecord"></p></div>
-        <div><p v-html="currentRecord"></p></div>
-        <div><p v-html="currentRecord"></p></div>
+        <div v-if="isPending" class="pa-12 d-flex justify-center align-center">
+          <v-progress-circular
+            indeterminate
+            color="amber"
+          ></v-progress-circular>
+        </div>
+        <div v-else>
+          <p
+            v-for="(ex, index) in historyArray"
+            :key="ex.date + index"
+            v-html="ex.status"
+          ></p>
+        </div>
       </v-card-text>
     </Modal>
     <Modal v-if="showExInfo && !showHistory">
@@ -180,10 +185,12 @@ export default {
     return {
       showHistory: false,
       showExInfo: false,
+      historyArray: [],
       modifyExercise: false,
       deleteCheck: false,
       addingNewExercise: false,
-      program: {}
+      program: {},
+      isPending: false
     }
   },
   computed: {
@@ -207,6 +214,25 @@ export default {
     this.$events.on('closeFormEx', () => {
       this.addingNewExercise = false
       this.modifyExercise = false
+    })
+
+    this.$events.on('history-btn-clicked', (exerciseId) => {
+      this.showHistory = true
+      this.isPending = true
+
+      this.$root.userDoc
+        .collection('exercises')
+        .doc(exerciseId)
+        .collection('history')
+        .get()
+        .then((ref) => {
+          this.isPending = false
+          if (ref.docs.length) {
+            this.historyArray = ref.docs.map((doc) => doc.data())
+          } else {
+            this.historyArray = [{ date: '', status: 'Not tracked yet' }]
+          }
+        })
     })
     this.$root.userDoc
       .collection('programs')

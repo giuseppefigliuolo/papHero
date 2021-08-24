@@ -2,14 +2,15 @@
   <v-expansion-panel>
     <v-expansion-panel-header>
       <div class="accordion-header">
-        <v-icon> mdi-drag </v-icon><span>{{ title }}</span
-        ><v-icon @click="showExInfo = !showExInfo">
-          mdi-information-outline </v-icon
-        ><v-icon @click="showHistory = !showHistory"> mdi-history</v-icon>
+        <v-icon> mdi-drag </v-icon><span>{{ exercise.text }}</span>
+        <v-icon @click="showExInfo = !showExInfo"
+          >mdi-information-outline</v-icon
+        >
+        <v-icon @click="historyBtnHandler"> mdi-history</v-icon>
       </div>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <p v-html="wpCurrentRecord"></p>
+      <p v-html="currentRecord.status"></p>
       <v-card
         class="mx-auto pa-4 pb-0 d-flex justify-space-between flex-wrap"
         max-width="400px"
@@ -47,27 +48,91 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'ExerciseAccordion',
   props: {
-    title: { type: String, required: true },
-    currentRecord: { type: String }
+    exercise: { type: Object, required: true }
   },
   data() {
     return {
-      showHistory: false,
       showExInfo: false,
       reps: '',
       weight: '',
-      wpCurrentRecord: ''
+      currentRecord: {
+        date: '',
+        status: ''
+      },
+      todayRecordRef: null
     }
+  },
+  created() {
+    // lets find today's doc in history
+    this.today = moment().format('DD-MM-YY')
+
+    this.checkTodaysRecordRef()
   },
   methods: {
     updateCurrentRecord() {
-      const oldCurrentRecord = this.wpCurrentRecord
-      this.wpCurrentRecord = `${oldCurrentRecord} ${
+      const oldCurrentRecord = this.currentRecord.status
+      this.currentRecord.status = `${oldCurrentRecord} ${
         oldCurrentRecord.length ? '-' : ''
       } <b>${this.reps}</b>(${this.weight})`
+
+      const history = this.$root.userDoc
+        .collection('exercises')
+        .doc(this.exercise.value)
+        .collection('history')
+      if (this.todayRecordRef) {
+        console.log(this.todayRecordRef.id)
+        history.doc(this.todayRecordRef.id).set({
+          status: this.currentRecord.status,
+          date: this.today
+        })
+      } else {
+        history
+          .doc()
+          .set({
+            status: this.currentRecord.status,
+            date: this.today
+          })
+          .then(() => {
+            console.log('Document successfully written!')
+
+            this.checkTodaysRecordRef()
+          })
+          .catch((error) => {
+            console.error('Error writing document: ', error)
+          })
+      }
+    },
+    checkTodaysRecordRef() {
+      this.$root.userDoc
+        .collection('exercises')
+        .doc(this.exercise.value)
+        .collection('history')
+        .get()
+        .then((ref) => {
+          this.todayRecordRef =
+            ref.docs.find((doc) => {
+              const data = doc.data()
+
+              return data.date === this.today
+            }) || ''
+
+          if (this.todayRecordRef) {
+            const data = this.todayRecordRef.data()
+
+            this.currentRecord = {
+              date: data.date,
+              status: data.status
+            }
+          }
+        })
+    },
+    historyBtnHandler() {
+      this.$events.emit('history-btn-clicked', this.exercise.value)
     }
   }
 }
