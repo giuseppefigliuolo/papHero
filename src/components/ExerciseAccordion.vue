@@ -125,10 +125,13 @@ export default {
         .collection('history')
       if (this.todayRecordRef) {
         console.log(this.todayRecordRef.id)
-        history.doc(this.todayRecordRef.id).set({
-          status: this.currentRecord.status,
-          date: this.today
-        })
+        history
+          .doc(this.todayRecordRef.id)
+          .set({
+            status: this.currentRecord.status,
+            date: this.today
+          })
+          .then(() => (this.isEditingCurrRec = false))
       } else {
         history
           .doc()
@@ -146,8 +149,23 @@ export default {
           })
       }
     },
-    editCurrentRecord(evt) {
-      console.log(evt)
+    editCurrentRecord() {
+      this.$root.userDoc
+        .collection('exercises')
+        .doc(this.exercise.value)
+        .collection('history')
+        .doc(this.todayRecordRef.id)
+        .set(
+          {
+            status: this.currentRecord.status
+          },
+          { merge: true }
+        )
+        .then(() => {
+          this.isPending = false
+          this.isEditingCurrRec = false
+        })
+        .catch((err) => console.log(err))
     },
     checkTodaysRecordRef() {
       this.$root.userDoc
