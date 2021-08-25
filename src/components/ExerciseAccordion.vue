@@ -8,7 +8,36 @@
       </div>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <p v-html="currentRecord.status"></p>
+      <div @click="isEditingCurrRec = true">
+        <p class="today">Today</p>
+        <v-form
+          v-if="isEditingCurrRec && currentRecord.status.length"
+          class="d-flex"
+        >
+          <v-text-field
+            color="grey darken-3"
+            outlined
+            v-model="currentRecord.status"
+            dense
+            :disabled="currentRecord.status.length < 2"
+            @keydown.enter.prevent="editCurrentRecord"
+          ></v-text-field>
+          <v-btn
+            color="accent"
+            fab
+            small
+            class="ml-1"
+            elevation="0"
+            @click="editCurrentRecord"
+            dark
+            :loading="isPending"
+            ><v-icon dark>
+              mdi-check
+            </v-icon></v-btn
+          >
+        </v-form>
+        <p v-else v-html="htmlCurrentRecord"></p>
+      </div>
       <v-card
         class="mx-auto pa-4 pb-0 d-flex justify-space-between flex-wrap"
         max-width="400px"
@@ -24,7 +53,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            label="Weight"
+            label=" Weight"
             v-model="weight"
             outlined
             type="number"
@@ -34,7 +63,7 @@
           ></v-text-field>
         </v-col>
         <v-col cols="12" class="d-flex justify-center mt-n5">
-          <v-btn block dark elevation="2" @click="updateCurrentRecord"
+          <v-btn block dark elevation="2" @click.prevent="updateCurrentRecord"
             >Aggiungi serie<v-icon dark class="pl-4"
               >mdi-plus-circle-outline</v-icon
             ></v-btn
@@ -62,7 +91,19 @@ export default {
         date: '',
         status: ''
       },
-      todayRecordRef: null
+      todayRecordRef: null,
+      isEditingCurrRec: false,
+      isPending: false
+    }
+  },
+  computed: {
+    htmlCurrentRecord() {
+      return (
+        '<b>' +
+        this.currentRecord.status
+          .replaceAll('- ', '- <b>')
+          .replaceAll('(', '</b>(')
+      )
     }
   },
   created() {
@@ -74,9 +115,9 @@ export default {
   methods: {
     updateCurrentRecord() {
       const oldCurrentRecord = this.currentRecord.status
-      this.currentRecord.status = `${oldCurrentRecord} ${
-        oldCurrentRecord.length ? '-' : ''
-      } <b>${this.reps}</b>(${this.weight})`
+      this.currentRecord.status = `${
+        oldCurrentRecord ? oldCurrentRecord + ' ' : ''
+      }${oldCurrentRecord.length ? '- ' : ''}${this.reps}(${this.weight})`
 
       const history = this.$root.userDoc
         .collection('exercises')
@@ -104,6 +145,9 @@ export default {
             console.error('Error writing document: ', error)
           })
       }
+    },
+    editCurrentRecord(evt) {
+      console.log(evt)
     },
     checkTodaysRecordRef() {
       this.$root.userDoc
@@ -152,5 +196,14 @@ export default {
 
 .v-expansion-panel-header {
   padding-left: 0rem !important;
+}
+
+.today {
+  text-align: center;
+  font-size: 0.9rem;
+  color: $accent-clr;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-bottom: 0.25rem;
 }
 </style>
