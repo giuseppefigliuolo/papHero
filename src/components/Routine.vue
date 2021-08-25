@@ -69,7 +69,9 @@
     </v-btn>
     <Modal v-if="showModal">
       <v-card-text class="py-6">
-        <h2 class="fz--3 accent-clr mb-10">Add daily session</h2>
+        <h2 class="fz--3 accent-clr mb-10">
+          {{ programToEdit ? 'Edit' : 'Add' }} daily session
+        </h2>
         <v-form>
           <v-row>
             <v-col cols="10">
@@ -78,6 +80,8 @@
                 color="grey darken-3"
                 outlined
                 v-model="newName"
+                hide-details
+                :rules="[rules.required]"
                 dense
                 autofocus
               ></v-text-field>
@@ -86,8 +90,10 @@
               <v-text-field
                 label="Day"
                 color="grey darken-3"
+                :rules="[rules.required]"
                 v-model="newDay"
                 outlined
+                hide-details
                 dense
               ></v-text-field>
             </v-col>
@@ -101,13 +107,21 @@
                 mode="rgba"
                 show-swatches
                 swatches-max-height="120"
+                :rules="[rules.required]"
                 v-model="chosenClr"
                 width="100%"
               ></v-color-picker>
             </v-col>
             <v-divider></v-divider>
             <v-col class="d-flex justify-end ">
-              <v-btn outlined plain class="mr-4" @click="showModal = false"
+              <v-btn
+                outlined
+                plain
+                class="mr-4"
+                @click="
+                  showModal = false
+                  programToEdit = null
+                "
                 >Cancel</v-btn
               >
               <v-btn
@@ -116,6 +130,11 @@
                 class="mr-4"
                 :loading="isPending"
                 @click="handleSubmitNewProgram"
+                :disabled="
+                  newName.length < 3 ||
+                    newDay.length < 3 ||
+                    chosenClr.length < 1
+                "
                 >Done</v-btn
               >
             </v-col>
@@ -147,7 +166,11 @@ export default {
       newName: '',
       programs: [],
       newDay: '',
-      error: null
+      error: null,
+      programToEdit: null,
+      rules: {
+        required: (value) => !!value || 'Please fill this empty field.'
+      }
     }
   },
   created() {
@@ -183,24 +206,35 @@ export default {
       // this.$events.emit('goToProgram', program)
       this.$router.push(`/program/${program.id}`)
     },
-    handleSubmitNewProgram() {
+    async handleSubmitNewProgram() {
       this.isPending = true
-      this.docRef
-        .doc()
-        .set({
-          name: this.newName,
-          day: this.newDay,
-          color: this.chosenClr,
-          createdAt: timestamp()
-        })
-        .then(() => {
-          this.isPending = false
-          this.showModal = false
-          this.newName = ''
-          this.newDay = ''
-          this.newChosenClr = ''
-        })
-        .catch((err) => console.log(err))
+      try {
+        if (this.programToEdit) {
+          await this.docRef.doc(this.programToEdit).set(
+            {
+              name: this.newName,
+              day: this.newDay,
+              color: this.chosenClr
+            },
+            { merge: true }
+          )
+        } else {
+          await this.docRef.doc().set({
+            name: this.newName,
+            day: this.newDay,
+            color: this.chosenClr,
+            createdAt: timestamp()
+          })
+        }
+        this.isPending = false
+        this.showModal = false
+        this.programToEdit = null
+        this.newName = ''
+        this.newDay = ''
+        this.newChosenClr = ''
+      } catch (err) {
+        console.log(err)
+      }
     },
     handleDotsMenu(type, id) {
       if (type === 'delete') {
@@ -211,6 +245,9 @@ export default {
             console.log('Document deleted!')
           })
           .catch((err) => console.log(err))
+      } else if ('edit') {
+        this.showModal = true
+        this.programToEdit = id
       }
     }
   }
