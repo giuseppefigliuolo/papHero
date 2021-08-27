@@ -11,7 +11,7 @@
         v-model="programs"
         handle=".drag-ex-icon"
         @start="drag = true"
-        @end="drag = false"
+        @end="dragEnded"
         animation="200"
       >
         <v-col
@@ -45,7 +45,7 @@
               <v-list-item
                 v-for="(item, index) in items"
                 :key="index"
-                @click="handleDotsMenu(item.title.toLowerCase(), program.id)"
+                @click="handleDotsMenu(item.title.toLowerCase(), program)"
               >
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item>
@@ -108,7 +108,7 @@
                 show-swatches
                 swatches-max-height="120"
                 :rules="[rules.required]"
-                v-model="chosenClr"
+                v-model="newColor"
                 width="100%"
               ></v-color-picker>
             </v-col>
@@ -121,6 +121,9 @@
                 @click="
                   showModal = false
                   programToEdit = null
+                  newColor = ''
+                  newDay = ''
+                  newName = ''
                 "
                 >Cancel</v-btn
               >
@@ -131,9 +134,7 @@
                 :loading="isPending"
                 @click="handleSubmitNewProgram"
                 :disabled="
-                  newName.length < 3 ||
-                    newDay.length < 3 ||
-                    chosenClr.length < 1
+                  newName.length < 3 || newDay.length < 1 || newColor.length < 1
                 "
                 >Done</v-btn
               >
@@ -158,10 +159,10 @@ export default {
   },
   data() {
     return {
-      dragging: false,
+      drag: false,
       items: [{ title: 'Edit' }, { title: 'Delete' }],
       showModal: false,
-      chosenClr: '',
+      newColor: '',
       isPending: false,
       newName: '',
       programs: [],
@@ -174,6 +175,7 @@ export default {
     }
   },
   created() {
+    this.programsOrder = null
     this.docRef = this.$root.userDoc.collection('programs')
     this.docRef.orderBy('createdAt').onSnapshot(
       (collection) => {
@@ -189,12 +191,6 @@ export default {
     )
   },
   watch: {
-    programs(value) {
-      console.log(value)
-    },
-    chosenClr(value) {
-      console.log(value)
-    },
     newDay(value) {
       if (value.length >= 3) {
         this.newDay = value
@@ -210,11 +206,11 @@ export default {
       this.isPending = true
       try {
         if (this.programToEdit) {
-          await this.docRef.doc(this.programToEdit).set(
+          await this.docRef.doc(this.programToEdit.id).set(
             {
               name: this.newName,
               day: this.newDay,
-              color: this.chosenClr
+              color: this.newColor
             },
             { merge: true }
           )
@@ -222,7 +218,7 @@ export default {
           await this.docRef.doc().set({
             name: this.newName,
             day: this.newDay,
-            color: this.chosenClr,
+            color: this.newColor,
             createdAt: timestamp()
           })
         }
@@ -231,24 +227,48 @@ export default {
         this.programToEdit = null
         this.newName = ''
         this.newDay = ''
-        this.newChosenClr = ''
+        this.newColor = ''
       } catch (err) {
         console.log(err)
       }
     },
-    handleDotsMenu(type, id) {
+    handleDotsMenu(type, program) {
       if (type === 'delete') {
         this.docRef
-          .doc(id)
+          .doc(program, id)
           .delete()
           .then(() => {
             console.log('Document deleted!')
           })
           .catch((err) => console.log(err))
       } else if ('edit') {
+        this.programToEdit = program
+        this.newName = this.programToEdit.name
+        this.newColor = this.programToEdit.color
+        this.newDay = this.programToEdit.day
         this.showModal = true
-        this.programToEdit = id
       }
+    },
+    dragEnded() {
+      this.drag = false
+
+      this.$root.userDoc
+        .collection('programs')
+        .get()
+        .then((collection) => {
+          collection.docs.forEach((doc, i) => {
+            doc.ref.set(
+              {
+                color: this.programs[i].color,
+                day: this.programs[i].day,
+                exercises: this.programs[i].exercises || [],
+                name: this.programs[i].name
+              },
+              { merge: true }
+            )
+          })
+        })
+        .catch((err) => console.log(err))
     }
   }
 }

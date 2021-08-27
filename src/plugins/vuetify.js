@@ -1,17 +1,17 @@
-import Vue from "vue";
-import Vuetify from "vuetify/lib/framework";
+import Vue from 'vue'
+import Vuetify from 'vuetify/lib/framework'
 
-Vue.use(Vuetify);
+Vue.use(Vuetify)
 
 export default new Vuetify({
   theme: {
     themes: {
       light: {
-        primary: "#6A6A6A",
-        secondary: "#b0bec5",
-        accent: "#ff8577",
-        error: "#b71c1c",
-      },
-    },
-  },
-});
+        primary: '#6A6A6A',
+        secondary: '#b0bec5',
+        accent: '#DB4C3F',
+        error: '#b71c1c'
+      }
+    }
+  }
+})
