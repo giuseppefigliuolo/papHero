@@ -23,6 +23,7 @@ export const logoutMixin = {
       }
 
       if (!this.error) {
+        this.$events.emit('logout')
         console.log(' user logged out')
       }
     }

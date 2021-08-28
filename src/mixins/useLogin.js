@@ -1,8 +1,10 @@
-import { projectAuth } from '../firebase/config'
+import { projectAuth, googleAuthProvider } from '../firebase/config'
+import firebase from 'firebase'
 
 export const useLogin = {
   data() {
     return {
+      googleAuth: false,
       email: '',
       password: '',
       error: null,
@@ -12,23 +14,31 @@ export const useLogin = {
   computed: {},
   methods: {
     async loginHandler() {
-      this.error = null
-      this.isPending = true
-
-      try {
-        // login in firebase
-        const res = await projectAuth.signInWithEmailAndPassword(
-          this.email,
-          this.password
-        )
-
-        this.isPending = false
-        // resettiamo l'errore
+      if (this.googleAuth) {
+        try {
+          await firebase.auth().signInWithPopup(googleAuthProvider)
+        } catch (err) {
+          console.error(err)
+        }
+      } else {
         this.error = null
-      } catch (err) {
-        console.log(err.message)
-        this.error = 'Incorrect login credentials'
-        this.isPending = false
+        this.isPending = true
+
+        try {
+          // login in firebase
+          const res = await projectAuth.signInWithEmailAndPassword(
+            this.email,
+            this.password
+          )
+
+          this.isPending = false
+          // resettiamo l'errore
+          this.error = null
+        } catch (err) {
+          console.log(err.message)
+          this.error = 'Incorrect login credentials'
+          this.isPending = false
+        }
       }
 
       if (!this.error) {
@@ -37,6 +47,7 @@ export const useLogin = {
         console.log('User Signup!')
         this.$router.push({ name: 'Home' })
       }
+      this.googleAuth = false
     }
   }
 }

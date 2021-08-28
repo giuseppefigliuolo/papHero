@@ -24,6 +24,7 @@ const requireAuth = async (to, from, next) => {
         return {
           text: extractedData.name,
           description: extractedData.description,
+          imgUrl: extractedData.imgUrl,
           value: doc.id,
           disabled: false,
           existingIn: extractedData.existingIn

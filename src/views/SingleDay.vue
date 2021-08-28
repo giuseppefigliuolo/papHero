@@ -61,10 +61,7 @@
           <p class="primary--text fw--normal fz--1 my-4">
             {{ exerciseInfo.description }}
           </p>
-          <v-img
-            max-height="140"
-            src="https://media.istockphoto.com/vectors/man-working-out-with-barbell-lying-on-a-bench-bench-press-colorful-vector-id1028234906?k=6&m=1028234906&s=612x612&w=0&h=9bQsWLMYx2HudQ5ar3ZJmt4s4VqA_Kd1Gg6yp-rG-0g="
-          ></v-img>
+          <v-img max-height="140" :src="exerciseInfo.imgUrl"></v-img>
           <v-col class="d-flex justify-end mb-n3 mt-5">
             <v-btn
               plain
@@ -174,7 +171,8 @@ export default {
       addingNewExercise: false,
       program: {},
       isPending: false,
-      exerciseInfo: {}
+      exerciseInfo: {},
+      img: null
     }
   },
   computed: {

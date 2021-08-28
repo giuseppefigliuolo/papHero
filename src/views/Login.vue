@@ -44,7 +44,16 @@
                 :loading="isPending"
                 >Accedi</v-btn
               >
-              <v-btn block dark elevation="2" height="43px" class="mt-4"
+              <v-btn
+                block
+                dark
+                elevation="2"
+                height="43px"
+                class="mt-4"
+                @click="
+                  googleAuth = true
+                  loginHandler()
+                "
                 ><v-icon left dark> mdi-google </v-icon>Continua con
                 Google</v-btn
               >
@@ -65,8 +74,8 @@
 </template>
 
 <script>
-import Logo from "../components/atoms/Logo";
-import { useLogin } from "@/mixins/useLogin";
+import Logo from '../components/atoms/Logo'
+import { useLogin } from '@/mixins/useLogin'
 
 export default {
   components: { Logo },
@@ -75,15 +84,15 @@ export default {
     return {
       show: false,
       rules: {
-        required: (value) => !!value || "E-mail field is required",
+        required: (value) => !!value || 'E-mail field is required',
         email: (value) => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return pattern.test(value) || "Invalid e-mail.";
-        },
-      },
-    };
-  },
-};
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
+        }
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

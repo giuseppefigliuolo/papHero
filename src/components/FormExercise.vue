@@ -43,7 +43,6 @@
       prepend-icon="mdi-image"
       label="Image"
       v-model="coverImg"
-      @change="handleChange"
       :disabled="!!existingExerciseSelected"
     ></v-file-input>
     <v-col class="d-flex justify-end mb-n3 mt-2">
@@ -56,7 +55,7 @@
         class="mr-n2"
         @click="savingUpdates"
         :loading="isPending"
-        :disabled="newExName.length < 3"
+        :disabled="newExName.length < 3 || coverImgError"
         >Done</v-btn
       >
     </v-col>
@@ -64,7 +63,7 @@
 </template>
 
 <script>
-import { timestamp } from '../firebase/config'
+import { timestamp, projectStorage } from '../firebase/config'
 
 export default {
   name: 'FormExercise',
@@ -88,10 +87,14 @@ export default {
       existingExerciseSelected: null,
       allExercises: [],
       rules: {
-        image: (value) =>
-          !value ||
-          value.size < 2000000 ||
-          'Image size should be less than 2 MB!',
+        image: (value) => {
+          if (value?.size > 1000000) {
+            this.coverImgError = true
+            return 'Image size should be less than 1 MB!'
+          } else {
+            return true
+          }
+        },
         required: (value) => !!value || 'Give a name to this exercise!'
       }
     }
@@ -100,16 +103,23 @@ export default {
     async savingUpdates() {
       this.isPending = true
       if (this.formForUpdate) {
+        await this.handleImg()
+
         this.$root.userDoc
           .collection('exercises')
           .doc(this.exerciseId)
           .set(
             {
               name: this.newExName,
-              description: this.newExDescription
+              description: this.newExDescription,
+              imgUrl: this.url
             },
             { merge: true }
           )
+          .then(() => {
+            console.log('success')
+          })
+          .catch((err) => console.log(err))
 
         this.isPending = false
       } else {
@@ -138,12 +148,15 @@ export default {
         } else {
           /* ADDING NEW EX */
           try {
+            await this.handleImg()
+
             await this.$root.userDoc
               .collection('exercises')
               .add({
                 name: this.newExName,
                 description: this.newExDescription,
                 existingIn: [this.programId],
+                imgUrl: this.url,
                 createdAt: timestamp()
               })
               .then((ref) => {
@@ -170,13 +183,25 @@ export default {
           )
           .then(() => console.log('added in ex array'))
       }
+      this.coverImg = null
       this.cancelBtnClicked()
     },
     cancelBtnClicked() {
       this.$events.emit('closeFormEx')
     },
-    handleChange(evt) {
-      console.log(this.coverImg)
+    async handleImg() {
+      // creiamo l'url
+      this.filePath = `exerciseCover/${this.$root.user.uid}/${this.coverImg.name}`
+      // diamo le coordinate (cioè l'url) allo storage per cercare quello che vogliamo
+      const storageRef = projectStorage.ref(this.filePath)
+      try {
+        const res = await storageRef.put(this.coverImg)
+        // metodo di firebase per avere il link al download del file che abbiamo appena caricato
+        this.url = await res.ref.getDownloadURL()
+      } catch (err) {
+        console.log(err.message)
+        this.storageError = err
+      }
     }
   }
 }

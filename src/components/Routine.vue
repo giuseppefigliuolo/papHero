@@ -177,7 +177,7 @@ export default {
   created() {
     this.programsOrder = null
     this.docRef = this.$root.userDoc.collection('programs')
-    this.docRef.orderBy('createdAt').onSnapshot(
+    this.unsub = this.docRef.orderBy('createdAt').onSnapshot(
       (collection) => {
         let results = []
         collection.docs.forEach((program) => {
@@ -189,6 +189,10 @@ export default {
       },
       (err) => console.log(err)
     )
+
+    this.$events.on('logout', () => {
+      this.unsub()
+    })
   },
   watch: {
     newDay(value) {
