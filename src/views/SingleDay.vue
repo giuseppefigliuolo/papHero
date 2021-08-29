@@ -114,6 +114,8 @@
           :formForUpdate="modifyExercise && !addingNewExercise"
           :exercises="program.exercises"
           :exerciseId="exerciseInfo.value"
+          :name="exerciseInfo.text"
+          :description="exerciseInfo.description"
           v-else
         />
       </v-card-text>
@@ -152,6 +154,7 @@ import draggable from 'vuedraggable'
 import Modal from '../components/Modal.vue'
 import ExerciseAccordion from '../components/ExerciseAccordion.vue'
 import FormExercise from '../components/FormExercise.vue'
+import { projectStorage } from '../firebase/config'
 
 export default {
   name: 'SingleDay',
@@ -231,20 +234,27 @@ export default {
       })
   },
   methods: {
-    deleteExercise() {
-      this.$root.userDoc
-        .collection('exercises')
-        .doc(this.exerciseInfo.value)
-        .delete()
-        .then(() => {
-          console.log('Document successfully deleted!')
+    async deleteExercise() {
+      try {
+        const imgUrl = this.exerciseInfo.imgUrl
 
-          this.deleteCheck = false
-          this.showExInfo = false
-        })
-        .catch((error) => {
-          console.error('Error removing document: ', error)
-        })
+        await this.$root.userDoc
+          .collection('exercises')
+          .doc(this.exerciseInfo.value)
+          .delete()
+          .then(() => {
+            console.log('Document successfully deleted!')
+
+            this.deleteCheck = false
+            this.showExInfo = false
+          })
+
+        const imgRef = await projectStorage.refFromURL(imgUrl)
+
+        imgRef.delete().then(() => console.log('Img deleted in storage'))
+      } catch (err) {
+        console.error('Error removing document: ', error)
+      }
     }
   }
 }

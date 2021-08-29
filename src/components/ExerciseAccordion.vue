@@ -124,7 +124,6 @@ export default {
         .doc(this.exercise.value)
         .collection('history')
       if (this.todayRecordRef) {
-        console.log(this.todayRecordRef.id)
         history
           .doc(this.todayRecordRef.id)
           .set({

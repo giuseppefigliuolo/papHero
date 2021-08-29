@@ -75,7 +75,9 @@ export default {
         return []
       }
     },
-    exerciseId: { type: String }
+    exerciseId: { type: String },
+    name: { type: String },
+    description: { type: String }
   },
   data() {
     return {
@@ -97,6 +99,12 @@ export default {
         },
         required: (value) => !!value || 'Give a name to this exercise!'
       }
+    }
+  },
+  created() {
+    if (this.name && this.description) {
+      this.newExName = this.name
+      this.newExDescription = this.description
     }
   },
   methods: {
