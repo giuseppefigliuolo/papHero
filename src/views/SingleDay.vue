@@ -35,12 +35,11 @@
             color="amber"
           ></v-progress-circular>
         </div>
-        <div v-else>
-          <p
-            v-for="(ex, index) in historyArray"
-            :key="ex.date + index"
-            v-html="ex.status"
-          ></p>
+        <div class="history-container" v-else>
+          <div v-for="(ex, index) in historyArray" :key="ex.date + index">
+            <p class="ex-data">{{ ex.date }}</p>
+            <p v-html="ex.status"></p>
+          </div>
         </div>
       </v-card-text>
     </Modal>
@@ -219,6 +218,7 @@ export default {
             this.historyArray = [{ date: '', status: 'Not tracked yet' }]
           }
         })
+        .catch((err) => console.log(err))
     })
 
     this.$events.on('info-btn-clicked', (exercise) => {
@@ -269,5 +269,17 @@ export default {
 
 .card-text {
   position: relative;
+}
+
+.ex-data {
+  color: $accent-clr;
+  font-size: 0.65rem;
+  font-weight: bold;
+  margin-bottom: -4px;
+}
+
+.history-container {
+  max-height: 45vh;
+  overflow-y: auto;
 }
 </style>
