@@ -1,5 +1,4 @@
 import { projectAuth, googleAuthProvider } from '../firebase/config'
-import firebase from 'firebase'
 
 export const useLogin = {
   data() {
@@ -16,7 +15,7 @@ export const useLogin = {
     async loginHandler() {
       if (this.googleAuth) {
         try {
-          await firebase.auth().signInWithPopup(googleAuthProvider)
+          await projectAuth.signInWithPopup(googleAuthProvider)
         } catch (err) {
           console.error(err)
         }

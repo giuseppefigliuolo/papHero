@@ -2,7 +2,7 @@
   <v-container class="mt-2">
     <div class="fz--2">
       <h2 class="pl-5 primary--text fw--semi-bold" v-if="$root.user">
-        Routine di {{ $root.user.displayName }}
+        Routine di {{ $root.user.displayName.split(' ')[0] }}
       </h2>
     </div>
     <v-row class="my-4">

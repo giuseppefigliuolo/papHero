@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import SignIn from '@/views/SignIn.vue'
 
 // Route guard
 import { projectAuth, projectFirestore } from '../firebase/config'
@@ -57,13 +56,15 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/Login.vue'),
     beforeEnter: requireLogout
   },
   {
     path: '/sign-in',
     name: 'SignIn',
-    component: SignIn,
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/SignIn.vue'),
     beforeEnter: requireLogout
   },
   {
@@ -79,8 +80,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import('../views/About.vue')
   }
 ]
 
