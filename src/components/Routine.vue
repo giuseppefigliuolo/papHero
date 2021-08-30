@@ -6,7 +6,16 @@
       </h2>
     </div>
     <v-row class="my-4">
+      <div v-if="!programs.length" class="skeleton-container">
+        <v-skeleton-loader
+          class="ma-auto"
+          type="expansion-panel, article, actions"
+          v-for="skeleton in 2"
+          :key="skeleton"
+        ></v-skeleton-loader>
+      </div>
       <draggable
+        v-else
         class="draggable-section"
         v-model="programs"
         handle=".drag-ex-icon"
@@ -286,5 +295,10 @@ export default {
 
 .draggable-section {
   width: 100%;
+}
+
+.skeleton-container {
+  width: 90%;
+  margin: 0 auto;
 }
 </style>
