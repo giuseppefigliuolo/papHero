@@ -4,6 +4,7 @@ import router from './router'
 import VueEvents from 'vue-event-handler'
 import vuetify from './plugins/vuetify'
 import { projectAuth, projectFirestore } from './firebase/config'
+import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
