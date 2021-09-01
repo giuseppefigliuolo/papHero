@@ -24,6 +24,35 @@
       >
     </noscript>
     <div id="app"></div>
+    <div class="l-container">
+      <div id="loader"></div>
+    </div>
     <!-- built files will be auto injected -->
+    <style>
+      .l-container {
+        height: 100vh;
+        width: 100vw;
+        display: grid;
+        place-content: center;
+      }
+
+      #loader {
+        border: 7px solid;
+        border-color: #ff8c82 #db4c3f #db4c3f;
+        border-radius: 50%;
+        height: 50px;
+        width: 50px;
+        animation: spin 2s linear infinite 0s;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(720deg);
+        }
+      }
+    </style>
   </body>
 </html>

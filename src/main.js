@@ -22,7 +22,10 @@ projectAuth.onAuthStateChanged((_user) => {
       },
       router,
       vuetify,
-      render: (h) => h(App)
+      render: (h) => {
+        document.querySelector('.l-container').style.display = 'none'
+        return h(App)
+      }
     }).$mount('#app')
   }
 })
