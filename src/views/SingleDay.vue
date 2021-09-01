@@ -49,6 +49,7 @@
           @click="
             showExInfo = false
             deleteCheck = false
+            modifyExercise = false
           "
           x-large
           icon

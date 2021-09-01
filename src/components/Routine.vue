@@ -10,7 +10,6 @@
         <v-skeleton-loader
           class="ma-auto"
           type="expansion-panel, article, actions"
-          v-for="skeleton in 2"
           :key="skeleton"
         ></v-skeleton-loader>
       </div>

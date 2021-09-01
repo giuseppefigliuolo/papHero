@@ -55,7 +55,9 @@
         class="mr-n2"
         @click="savingUpdates"
         :loading="isPending"
-        :disabled="newExName.length < 3 || coverImgError"
+        :disabled="
+          !existingExerciseSelected && (newExName.length < 3 || coverImgError)
+        "
         >Done</v-btn
       >
     </v-col>
@@ -156,7 +158,7 @@ export default {
         } else {
           /* ADDING NEW EX */
           try {
-            await this.handleImg()
+            if (this.coverImg) await this.handleImg()
 
             await this.$root.userDoc
               .collection('exercises')
@@ -164,7 +166,7 @@ export default {
                 name: this.newExName,
                 description: this.newExDescription,
                 existingIn: [this.programId],
-                imgUrl: this.url,
+                imgUrl: this.url || '',
                 createdAt: timestamp()
               })
               .then((ref) => {
