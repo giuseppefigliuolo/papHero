@@ -6,11 +6,10 @@
       </h2>
     </div>
     <v-row class="my-4">
-      <div v-if="!programs.length" class="skeleton-container">
+      <div v-if="!programs" class="skeleton-container">
         <v-skeleton-loader
           class="ma-auto"
           type="expansion-panel, article, actions"
-          :key="skeleton"
         ></v-skeleton-loader>
       </div>
       <draggable
@@ -173,7 +172,7 @@ export default {
       newColor: '',
       isPending: false,
       newName: '',
-      programs: [],
+      programs: null,
       newDay: '',
       error: null,
       programToEdit: null,
