@@ -15,7 +15,6 @@ export default {
   name: 'App',
   components: { NavBar },
   async created() {
-    console.log('created')
     try {
       if (!this.$root.user) {
         projectAuth.onAuthStateChanged((_user) => {

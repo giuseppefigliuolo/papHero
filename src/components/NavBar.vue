@@ -53,7 +53,10 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar app dark color="accent">
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        @click="drawer = !drawer"
+        aria-label="navigation button"
+      ></v-app-bar-nav-icon>
 
       <v-toolbar-title
         ><router-link to="/" class="white--text"
