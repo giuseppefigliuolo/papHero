@@ -44,6 +44,7 @@
                 left
                 v-bind="attrs"
                 v-on="on"
+                aria-label="menu dots"
               >
                 mdi-dots-vertical
               </v-icon>
@@ -67,7 +68,6 @@
       right
       color="accent"
       class="mb-3 mr-3"
-      ghost-class="ghost"
       elevation="3"
       fab
       @click="showModal = true"
