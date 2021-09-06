@@ -69,6 +69,7 @@
       color="accent"
       class="mb-3 mr-3"
       elevation="3"
+      aria-label="fab button for adding new program"
       fab
       @click="showModal = true"
     >

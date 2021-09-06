@@ -22,7 +22,7 @@ module.exports = {
     ])
   },
   configureWebpack: {
-    mode: 'development',
+    mode: 'production',
     optimization: {
       nodeEnv: 'production',
       minimize: true
@@ -37,13 +37,6 @@ module.exports = {
           loader: 'vue-svg-loader'
         }
       ]
-    },
-    resolve: {
-      alias: {
-        '@c': path.resolve(__dirname, '/src/components'),
-        '@a': path.resolve(__dirname, '/src/assets'),
-        '@v': path.resolve(__dirname, '/src/views')
-      }
     }
   },
   css: {
