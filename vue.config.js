@@ -22,9 +22,9 @@ module.exports = {
     ])
   },
   configureWebpack: {
-    mode: 'production',
+    mode: 'development',
     optimization: {
-      nodeEnv: 'production',
+      nodeEnv: 'development',
       minimize: true
     },
     performance: {
