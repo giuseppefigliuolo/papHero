@@ -185,7 +185,7 @@ export default {
   created() {
     this.programsOrder = null
     this.docRef = this.$root.userDoc.collection('programs')
-    this.unsub = this.docRef.orderBy('createdAt').onSnapshot(
+    this.unsub = this.docRef.onSnapshot(
       (collection) => {
         let results = []
         collection.docs.forEach((program) => {
@@ -247,7 +247,7 @@ export default {
     handleDotsMenu(type, program) {
       if (type === 'delete') {
         this.docRef
-          .doc(program, id)
+          .doc(program.id)
           .delete()
           .then(() => {
             console.log('Document deleted!')

@@ -113,24 +113,36 @@ export default {
     async savingUpdates() {
       this.isPending = true
       if (this.formForUpdate) {
-        await this.handleImg()
+        try {
+          if (this.coverImg) {
+            await this.handleImg()
 
-        this.$root.userDoc
-          .collection('exercises')
-          .doc(this.exerciseId)
-          .set(
-            {
-              name: this.newExName,
-              description: this.newExDescription,
-              imgUrl: this.url
-            },
-            { merge: true }
-          )
-          .then(() => {
-            console.log('success')
-          })
-          .catch((err) => console.log(err))
-
+            this.$root.userDoc
+              .collection('exercises')
+              .doc(this.exerciseId)
+              .set(
+                {
+                  name: this.newExName,
+                  description: this.newExDescription,
+                  imgUrl: this.url
+                },
+                { merge: true }
+              )
+          } else {
+            this.$root.userDoc
+              .collection('exercises')
+              .doc(this.exerciseId)
+              .set(
+                {
+                  name: this.newExName,
+                  description: this.newExDescription
+                },
+                { merge: true }
+              )
+          }
+        } catch (err) {
+          console.log(err)
+        }
         this.isPending = false
       } else {
         this.programId = this.$route.params.day

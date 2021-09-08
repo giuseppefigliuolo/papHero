@@ -61,7 +61,19 @@
           <p class="primary--text fw--normal fz--1 my-4">
             {{ exerciseInfo.description }}
           </p>
-          <v-img max-height="140" :src="exerciseInfo.imgUrl"></v-img>
+          <v-img
+            min-height="140"
+            max-height="160"
+            :lazy-src="exerciseInfo.imgUrl"
+            :src="exerciseInfo.imgUrl"
+            ><template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <v-progress-circular
+                  indeterminate
+                  color="grey lighten-5"
+                ></v-progress-circular>
+              </v-row> </template
+          ></v-img>
           <v-col class="d-flex justify-end mb-n3 mt-5">
             <v-btn
               plain
